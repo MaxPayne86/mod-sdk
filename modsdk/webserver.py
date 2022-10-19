@@ -513,6 +513,9 @@ class Screenshot(JsonRequestHandler):
 
     def make_screenshot(self):
         fname = self.tmp_filename()
+        my_env = os.environ.copy()
+        my_env['DISPLAY'] = ':0'
+        my_env['QT_QPA_PLATFORM'] = 'offscreen'
         proc = subprocess.Popen([ PHANTOM_BINARY,
                                   SCREENSHOT_SCRIPT,
                                   'http://localhost:%d/icon.html#%s' % (PORT, self.uri),
@@ -520,7 +523,7 @@ class Screenshot(JsonRequestHandler):
                                   self.width,
                                   self.height,
                                 ],
-                                stdout=subprocess.PIPE)
+                                env=my_env, stdout=subprocess.PIPE)
 
         def proc_callback(fileno, event):
             if proc.poll() is None:
